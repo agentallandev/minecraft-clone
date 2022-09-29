@@ -42,3 +42,17 @@ body {
 .absolute {
   position: absolute;
 }
+
+.centered {
+  width: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+.cursor {
+  font-family:'Courier New', Courier, monospace;
+  font-size: 96px;
+  color: #aaaaaa;
+}

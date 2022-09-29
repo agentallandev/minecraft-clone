@@ -1,21 +1,24 @@
 import { useFrame, useThree} from "@react-three/fiber"
 import { useEffect, useRef} from "react"
 import { Vector3 } from "three"
-import { useSphere } from "@react-three/cannon"
+import { useBox, useSphere } from "@react-three/cannon"
 import { useKeyboard } from './hooks/useKeyboard'
+import { Sphere } from "@react-three/drei"
 
-const JUMP_FORCE = 3
+const JUMP_FORCE = 3.5
 const SPEED = 4
+var SPEED_MULT = 1
+var HEIGHT_MULT = 1
 
 export const Player = () =>{
 
-    const {moveForward, moveBackward, moveLeft, moveRight, jump} = useKeyboard()
+    const {moveForward, moveBackward, moveLeft, moveRight, jump, sprint, crouch} = useKeyboard()
 
     const {camera} = useThree()
     const [ref, api] = useSphere(() => ({
         mass: 1,
         type: 'Dynamic',
-        position: [0, 1, 0]
+        position: [0, 1.5, 0]
     }))
 
     const vel = useRef([0, 0, 0])
@@ -29,7 +32,22 @@ export const Player = () =>{
     }, [api.position])
 
     useFrame(() => {
-        camera.position.copy(new Vector3(pos.current[0], pos.current[1], pos.current[2]))
+
+
+        if(sprint){
+            SPEED_MULT=1.5
+            HEIGHT_MULT = 1
+        }
+        else if(crouch){
+            SPEED_MULT = 0.75
+            HEIGHT_MULT = 0.85
+        }
+        else{
+            SPEED_MULT = 1
+            HEIGHT_MULT = 1
+        }
+
+        camera.position.copy(new Vector3(pos.current[0], pos.current[1] * HEIGHT_MULT + .1, pos.current[2]))
     
 
         const direction = new Vector3()
@@ -46,16 +64,20 @@ export const Player = () =>{
 
         direction.subVectors(frontVector, sideVector)
         .normalize()
-        .multiplyScalar(SPEED)
+        .multiplyScalar(SPEED*SPEED_MULT)
         .applyEuler(camera.rotation)
 
         api.velocity.set(direction.x, vel.current[1], direction.z)
-        if(jump && Math.abs(vel.current[1]) < 0.05) {
+        if(jump && Math.abs(vel.current[1]) < 0.006) {
             api.velocity.set(vel.current[0], JUMP_FORCE, vel.current[2])
         }
     })
 
     return(
-        <mesh ref={ref}></mesh>
+        <mesh scale={[0.25, 1, 0.25]} ref={ref}>
+        <boxBufferGeometry attach="geometry" />
+        </mesh>
     )
+
+    
 }

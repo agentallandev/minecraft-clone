@@ -3,10 +3,10 @@
 - [x] Textures and images
 - [x] Ground
 - [x] Keyboard Inputs
-- [] Player
-- [] First person view
-- [] Gravity
-- [] Movement
+- [x] Player
+- [x] First person view
+- [x] Gravity
+- [x] Movement
 - [] State management
 - [] Cubes
 - [] Cube type selector
